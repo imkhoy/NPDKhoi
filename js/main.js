@@ -23,16 +23,57 @@ $(document).ready(function() {
 
     $("#checkoutForm").submit(function(e) {
         e.preventDefault();
-        const name = $("#name").val();
-        const address = $("#address").val();
-        const phone = $("#phone").val();
+        let isValid = true;
+
+        const name = $("#name").val().trim();
+        const address = $("#address").val().trim();
+        const phone = $("#phone").val().trim();
         const paymentMethod = $("#payment").val();
 
-        if (!name || !address || !phone) {
-            alert("Vui lòng nhập đầy đủ thông tin.");
-            return;
+        const capitalPattern = /^[A-ZÀ-Ỹ][a-zà-ỹ]*(\s[A-ZÀ-Ỹ][a-zà-ỹ]*)*$/;
+        const hasNumberPattern = /\d/;
+        const addressPattern = /^[A-ZÀ-Ỹ][a-zà-ỹ]*(\s[A-ZÀ-Ỹ][a-zà-ỹ]*)*$/;
+        const phonePattern = /^0[1-9][0-9]{8}$/;
+
+        $("#name").removeClass("is-invalid is-valid");
+        $("#name-capital-error, #name-number-error").hide();
+
+        let nameHasError = false;
+
+        if (!capitalPattern.test(name)) {
+            $("#name-capital-error").show();
+            nameHasError = true;
         }
 
+        if (hasNumberPattern.test(name)) {
+            $("#name-number-error").show();
+            nameHasError = true;
+        }
+
+        if (nameHasError) {
+            $("#name").addClass("is-invalid");
+            isValid = false;
+        } else {
+            $("#name").addClass("is-valid");
+        }
+
+        $("#address").removeClass("is-invalid is-valid");
+        if (!addressPattern.test(address)) {
+            $("#address").addClass("is-invalid");
+            isValid = false;
+        } else {
+            $("#address").addClass("is-valid");
+        }
+
+        $("#phone").removeClass("is-invalid is-valid");
+        if (!phonePattern.test(phone)) {
+            $("#phone").addClass("is-invalid");
+            isValid = false;
+        } else {
+            $("#phone").addClass("is-valid");
+        }
+
+        if (!isValid) return;
         const orderInfo = { name, address, phone, paymentMethod };
         localStorage.setItem("order", JSON.stringify(orderInfo));
 
